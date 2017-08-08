@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<title> The Lists </title>
+
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    	<meta charset="utf-8">
+
+    	<link rel='stylesheet' type="text/css" href="style.css">
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    
+	</head>
+
+	<body>
+
+		<div class='navigation'>
+			<ul class='navList'>
+				<a href='index.html'>
+					<li style='float:left;'> HOME </li>
+				</a>
+				<a href='admin.html'>
+					<li style='float:right;'> Admin </li>
+				</a>
+			</ul>
+		</div>
+		<div>
+			<br>
+			<a href='the-list.html'>
+				<button> &#8672; to list </button>
+			</a>
+		</div>
+
+		<div class='center'>
+
+			<h2> Editing </h2>
+			<h1 class='theEditing' id='theEditing'> </h1>
+
+			<label for="category" class='editLabel'> Select category you wish to edit and display </label><br><br>
+			<select id="category" class='category'>
+				<option> Select Category </option>
+				<option value="1"> Animals </option>
+				<option value="2"> Countries </option>
+				<option value="3"> Food </option>
+				<option value="4"> Actors </option>
+			</select><br><br><br>
+
+			<form method="post" class='left' id='formEditing'>
+				<h2> Insert Form </h2>
+				<input type='hidden' name="idCategory" id="idCategory" value="" >
+				<input type='hidden' name="insertAmount" id="insertAmount" value="1" >
+
+				<input type="radio" name="insertTotal" value="1" checked class=''> 1<br>
+			    <input type="radio" name="insertTotal" value="2"> 2<br>
+			    <input type="radio" name="insertTotal" value="3"> 3<br>
+			    <input type="radio" name="insertTotal" value="4"> 4 <br><br>
+
+				<div>
+					<label for="item1"> Name 1 </label><br>
+	            	<input type="text" name="item1" id="item1"> <br><br>
+            	</div>
+            	<div class='displayNone itemDisplayInsert' id="item2display">
+					<label for="item2"> Name 2 </label><br>
+            		<input type="text" name="item2" id="item2"> <br><br>
+            	</div>
+            	<div class='displayNone itemDisplayInsert' id="item3display">
+					<label for="item3"> Name 3 </label><br>
+            		<input type="text" name="item3" id="item3"> <br><br>
+            	</div>
+            	<div class='displayNone itemDisplayInsert' id="item4display">
+					<label for="item4"> Name 4 </label><br>
+            		<input type="text" name="item4" id="item4"> <br><br>
+            	</div>
+      
+            	<input id="insertBtn" type="submit" name="insert" class="insertButton" value="Insert"> <br><br>
+			</form>
+
+			<h3 class='left'> List of <span id="listof"> ... </span> </h3><br>
+			<table class='tableList center'>
+				<tr>
+				    <td><b> No </b></td>
+				    <td><b> NAME </b></td>
+				    <td><b> Action </b></td>
+				</tr>
+			</table>
+		</div>
+
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script>
+
+			var categoryNumber;
+
+    		$("#category").change(function(){
+    			getAllCategories();
+    		});
+
+    		function getAllCategories(){
+    			categoryNumber = $("#category").val();
+    			var category = "";
+    			
+    			if(categoryNumber == 1){
+    				category = "Animals";
+    			}
+    			else if(categoryNumber == 2){
+    				category = "Countries";
+    			}
+    			else if(categoryNumber == 3){
+    				category = "Food";
+    			}
+    			else if(categoryNumber == 4){
+    				category = "Actors";
+    			}
+
+    			$("#theEditing").text(category);
+    			$("#listof").text(category);
+    			$("#idCategory").val(categoryNumber);
+
+
+    			var url = "http://localhost/mobileApp/php/json.php?cat="+categoryNumber;
+
+    			$(".tableList").html("<tr><td><b> No </b></td><td><b> NAME </b></td><td><b>Action </b></td></tr>");
+
+		 		$.getJSON(url, function(result){
+		 			console.log(result);
+		 			$.each(result, function(i, data){
+		 				
+		 				var name = data.name;
+		 				var id = data.id_category;
+
+		 				
+		 				$(".tableList").append("<tr><td>"+(i+1)+"</td><td>" +name + "</td><td><button class='deleteButton' onClick='deleteEachItem("+'"'+name+'"'+")'><i class='fa fa-trash' aria-hidden='true'></i></button></a></td></tr>");
+		 			});
+		 		});
+    		}
+
+			$(".deleteButton").click(function(){
+				alert("click");
+			});
+
+    		$('input[type=radio][name=insertTotal]').change(function() {
+    			if($(this).val() == 1){
+    				$(".itemDisplayInsert").addClass('displayNone');
+    				$("#insertAmount").val(1);
+    			}
+    			else if($(this).val() == 2){
+    				$("#item2display").removeClass('displayNone');
+    				$("#item3display").addClass('displayNone');
+    				$("#item4display").addClass('displayNone');
+    				$("#insertAmount").val(2);
+    			}
+    			else if($(this).val() == 3){
+    				$(".itemDisplayInsert").removeClass('displayNone');
+    				$("#item4display").addClass('displayNone');
+    				$("#insertAmount").val(3);
+    			}
+    			else if($(this).val() == 4){
+    				$(".itemDisplayInsert").removeClass('displayNone');
+    				$("#insertAmount").val(4);
+    			}
+    		});
+
+    		function validationSpace(itemCount){
+    			console.log(itemCount);
+    			for(var i = 1; i <= itemCount ; i++){
+    				if($.trim($('#item'+i).val()).length == 0){
+    					alert('item '+i+ ' is Empty' );
+    					return false;
+    				}
+    			}
+    			return true;
+    		}
+
+    		$('#insertBtn').click(function(){
+    			var item1 = $("#item1").val();
+    			var item2 = $("#item2").val();
+    			var item3 = $("#item3").val();
+    			var item4 = $("#item4").val();
+    			var categoryNumber = $("#idCategory").val();
+    			var insertAmount = $("#insertAmount").val();
+
+    			// console.log(title + " "+ instructor + " " + time + " " + day);
+
+    			// Create string for GET request 
+    			var dataString = "item1=" + item1 + "&item2=" + item2 + "&item3=" + item3 + "&item4=" + item4 + "&insertAmount=" + insertAmount + "&idCategory=" + categoryNumber + "&insert=" ;
+
+    			console.log(dataString);
+
+    			// if($.trim(item1).length>0 & $.trim(item2).length>0 & $.trim(item3).length>0 & $.trim(day).length>0){
+    			if(validationSpace(insertAmount)){
+    				$.ajax({
+    					type: "POST",
+    					url: "http://localhost/mobileApp/php/insert.php",
+    					data: dataString,
+    					crossDomain: true,
+    					cache: false,
+    					beforeSend: function(){
+    						$("#insert").val("...inserting");
+    					},
+    					success: function(data){
+    						console.log(data);
+    						alert(data);
+
+    						getAllCategories();
+    						$("#insert").val("Insert");
+    					},
+    					error: function(xhr, ajaxOptions, thrownError){
+    						alert(xhr.status);
+    						alert(thrownError);
+    					}
+    				});
+    			} 
+    			
+    		});
+
+			function deleteEachItem(name){
+
+				var dataString="delete="+name;
+				 console.log(name);
+
+				$.ajax({
+					type: "GET",					
+					url:"http://localhost/mobileApp/php/delete.php",
+					data: dataString,
+					crossDomain: true,
+					cache: false,
+					beforeSend: function(){ 
+					 	$("#delete").val('...Deleting');
+					},
+					success: function(data){
+						console.log(data);
+						alert('Deleted');
+						getAllCategories();
+					}
+				});
+			}
+	    		
+		</script>
+	</body>
+
+
+</head>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<title> The Lists </title>
+
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    	<meta charset="utf-8">
+
+    	<link rel='stylesheet' type="text/css" href="style.css">
+    
+	</head>
+
+	<body class="form">
+
+		<div class='center'>
+
+			<h2> The List </h2>
+			<h1 class='theTitle' id='theTitle'> </h1>
+
+			<label for="category"> Category </label><br><br>
+			<select id="category" class='category'>
+				<option> Select Category </option>
+				<option value="1"> Animals </option>
+				<option value="2"> Countries </option>
+				<option value="3"> Food </option>
+				<option value="4"> Actors </option>
+			</select><br><br><br>
+
+			<a href="edit.html"  id="editList"> <button> Edit Data </button> <br><br><br> </a>
+
+
+			<table class='tableList displayNone center'>
+				<tr>
+				    <td><b> No </b></td>
+				    <td><b> NAME </b></td>
+				</tr>
+			</table>
+			
+
+		</div>
+
+
+		<script type="text/javascript" src="js/jquery.js"></script>
+	    <script type="text/javascript">
+
+	    	$(document).ready(function(){
+	    		var categoryNumber;
+
+	    		$("#category").change(function(){
+	    			categoryNumber = $("#category").val();
+	    			var category = "";
+	    			
+	    			if(categoryNumber == 1){
+	    				$("#theTitle").text("Animals");
+	    			}
+	    			else if(categoryNumber == 2){
+	    				category = "Countries";
+	    			}
+	    			else if(categoryNumber == 3){
+	    				category = "Food";
+	    			}
+	    			else if(categoryNumber == 4){
+	    				category = "Actors";
+	    			}
+
+	    			$("#theTitle").text(category);
+
+	    			$(".tableList").css("display","initial");
+		    		var url = "http://localhost/mobileApp/php/json.php?cat="+categoryNumber;
+
+			 		$.getJSON(url, function(result){
+			 			console.log(result);
+			 			$.each(result, function(i, data){
+			 				
+			 				var title = data.name;
+			 				
+			 				$(".tableList").append("<tr><td>"+(i+1)+"</td><td>" +title + "</td></tr>");
+
+			 			});
+			 		});
+	    		});
+	    	});
+	    
+	    </script>
+	     
+	</body>
+</html>
